@@ -1,121 +1,121 @@
 # coding=utf-8 
 import os
-import cv2
-from PIL import Image,ImageDraw
 
-#detectFaces()·µ»ØÍ¼ÏñÖĞËùÓĞÈËÁ³µÄ¾ØĞÎ×ø±ê£¨¾ØĞÎ×óÉÏ¡¢ÓÒÏÂ¶¥µã£©
-#Ê¹ÓÃhaarÌØÕ÷µÄ¼¶Áª·ÖÀàÆ÷haarcascade_frontalface_default.xml£¬ÔÚhaarcascadesÄ¿Â¼ÏÂ»¹ÓĞÆäËûµÄÑµÁ·ºÃµÄxmlÎÄ¼ş¿É¹©Ñ¡Ôñ¡£
-#×¢£ºhaarcascadesÄ¿Â¼ÏÂÑµÁ·ºÃµÄ·ÖÀàÆ÷±ØĞëÒÔ»Ò¶ÈÍ¼×÷ÎªÊäÈë¡£
+import cv2
+from PIL import Image, ImageDraw
+
+
+# detectFaces()è¿”å›å›¾åƒä¸­æ‰€æœ‰äººè„¸çš„çŸ©å½¢åæ ‡ï¼ˆçŸ©å½¢å·¦ä¸Šã€å³ä¸‹é¡¶ç‚¹ï¼‰
+# ä½¿ç”¨haarç‰¹å¾çš„çº§è”åˆ†ç±»å™¨haarcascade_frontalface_default.xmlï¼Œåœ¨haarcascadesç›®å½•ä¸‹è¿˜æœ‰å…¶ä»–çš„è®­ç»ƒå¥½çš„xmlæ–‡ä»¶å¯ä¾›é€‰æ‹©ã€‚
+# æ³¨ï¼šhaarcascadesç›®å½•ä¸‹è®­ç»ƒå¥½çš„åˆ†ç±»å™¨å¿…é¡»ä»¥ç°åº¦å›¾ä½œä¸ºè¾“å…¥ã€‚
 def detectFaces(image_name):
     img = cv2.imread(image_name)
-    face_cascade = cv2.CascadeClassifier("/usr/local/share/OpenCV/haarcascades/haarcascade_frontalface_default.xml")
+    face_cascade = cv2.CascadeClassifier(
+        "haarcascade_frontalface_default.xml")
     if img.ndim == 3:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
-        gray = img #ifÓï¾ä£ºÈç¹ûimgÎ¬¶ÈÎª3£¬ËµÃ÷²»ÊÇ»Ò¶ÈÍ¼£¬ÏÈ×ª»¯Îª»Ò¶ÈÍ¼gray£¬Èç¹û²»Îª3£¬Ò²¾ÍÊÇ2£¬Ô­Í¼¾ÍÊÇ»Ò¶ÈÍ¼
+        gray = img  # ifè¯­å¥ï¼šå¦‚æœimgç»´åº¦ä¸º3ï¼Œè¯´æ˜ä¸æ˜¯ç°åº¦å›¾ï¼Œå…ˆè½¬åŒ–ä¸ºç°åº¦å›¾grayï¼Œå¦‚æœä¸ä¸º3ï¼Œä¹Ÿå°±æ˜¯2ï¼ŒåŸå›¾å°±æ˜¯ç°åº¦å›¾
 
-    faces = face_cascade.detectMultiScale(gray, 1.2, 5)#1.3ºÍ5ÊÇÌØÕ÷µÄ×îĞ¡¡¢×î´ó¼ì²â´°¿Ú£¬Ëü¸Ä±ä¼ì²â½á¹ûÒ²»á¸Ä±ä
+    faces = face_cascade.detectMultiScale(gray, 1.2, 5)  # 1.3å’Œ5æ˜¯ç‰¹å¾çš„æœ€å°ã€æœ€å¤§æ£€æµ‹çª—å£ï¼Œå®ƒæ”¹å˜æ£€æµ‹ç»“æœä¹Ÿä¼šæ”¹å˜
     result = []
-    for (x,y,width,height) in faces:
-        result.append((x,y,x+width,y+height))
+    for (x, y, width, height) in faces:
+        result.append((x, y, x + width, y + height))
     return result
 
 
-#±£´æÈËÁ³Í¼
+# ä¿å­˜äººè„¸å›¾
 def saveFaces(image_name):
     faces = detectFaces(image_name)
     if faces:
-        #½«ÈËÁ³±£´æÔÚsave_dirÄ¿Â¼ÏÂ¡£
-        #ImageÄ£¿é£ºImage.open»ñÈ¡Í¼Ïñ¾ä±ú£¬crop¼ôÇĞÍ¼Ïñ(¼ôÇĞµÄÇøÓò¾ÍÊÇdetectFaces·µ»ØµÄ×ø±ê)£¬save±£´æ¡£
-        save_dir = image_name.split('.')[0]+"_faces"
+        # å°†äººè„¸ä¿å­˜åœ¨save_dirç›®å½•ä¸‹ã€‚
+        # Imageæ¨¡å—ï¼šImage.openè·å–å›¾åƒå¥æŸ„ï¼Œcropå‰ªåˆ‡å›¾åƒ(å‰ªåˆ‡çš„åŒºåŸŸå°±æ˜¯detectFacesè¿”å›çš„åæ ‡)ï¼Œsaveä¿å­˜ã€‚
+        save_dir = image_name.split('.')[0] + "_faces"
         os.mkdir(save_dir)
         count = 0
-        for (x1,y1,x2,y2) in faces:
-            file_name = os.path.join(save_dir,str(count)+".jpg")
-            Image.open(image_name).crop((x1,y1,x2,y2)).save(file_name)
-            count+=1
+        for (x1, y1, x2, y2) in faces:
+            file_name = os.path.join(save_dir, str(count) + ".jpg")
+            Image.open(image_name).crop((x1, y1, x2, y2)).save(file_name)
+            count += 1
 
 
-#ÔÚÔ­Í¼ÏñÉÏ»­¾ØĞÎ£¬¿ò³öËùÓĞÈËÁ³¡£
-#µ÷ÓÃImageÄ£¿éµÄdraw·½·¨£¬Image.open»ñÈ¡Í¼Ïñ¾ä±ú£¬ImageDraw.Draw»ñÈ¡¸ÃÍ¼ÏñµÄdrawÊµÀı£¬È»ºóµ÷ÓÃ¸ÃdrawÊµÀıµÄrectangle·½·¨»­¾ØĞÎ(¾ØĞÎµÄ×ø±ê¼´
-#detectFaces·µ»ØµÄ×ø±ê)£¬outlineÊÇ¾ØĞÎÏßÌõÑÕÉ«(B,G,R)¡£
-#×¢£ºÔ­Ê¼Í¼ÏñÈç¹ûÊÇ»Ò¶ÈÍ¼£¬ÔòÈ¥µôoutline£¬ÒòÎª»Ò¶ÈÍ¼Ã»ÓĞRGB¿ÉÑÔ¡£drawEyes¡¢detectSmilesÒ²Ò»Ñù¡£
+# åœ¨åŸå›¾åƒä¸Šç”»çŸ©å½¢ï¼Œæ¡†å‡ºæ‰€æœ‰äººè„¸ã€‚
+# è°ƒç”¨Imageæ¨¡å—çš„drawæ–¹æ³•ï¼ŒImage.openè·å–å›¾åƒå¥æŸ„ï¼ŒImageDraw.Drawè·å–è¯¥å›¾åƒçš„drawå®ä¾‹ï¼Œç„¶åè°ƒç”¨è¯¥drawå®ä¾‹çš„rectangleæ–¹æ³•ç”»çŸ©å½¢(çŸ©å½¢çš„åæ ‡å³
+# detectFacesè¿”å›çš„åæ ‡)ï¼Œoutlineæ˜¯çŸ©å½¢çº¿æ¡é¢œè‰²(B,G,R)ã€‚
+# æ³¨ï¼šåŸå§‹å›¾åƒå¦‚æœæ˜¯ç°åº¦å›¾ï¼Œåˆ™å»æ‰outlineï¼Œå› ä¸ºç°åº¦å›¾æ²¡æœ‰RGBå¯è¨€ã€‚drawEyesã€detectSmilesä¹Ÿä¸€æ ·ã€‚
 def drawFaces(image_name):
     faces = detectFaces(image_name)
     if faces:
         img = Image.open(image_name)
         draw_instance = ImageDraw.Draw(img)
-        for (x1,y1,x2,y2) in faces:
-            draw_instance.rectangle((x1,y1,x2,y2), outline=(255, 0,0))
-        img.save('drawfaces_'+image_name)
+        for (x1, y1, x2, y2) in faces:
+            draw_instance.rectangle((x1, y1, x2, y2), outline=(255, 0, 0))
+        img.save('drawfaces_' + image_name)
 
 
+# æ£€æµ‹çœ¼ç›ï¼Œè¿”å›åæ ‡
+# ç”±äºçœ¼ç›åœ¨äººè„¸ä¸Šï¼Œæˆ‘ä»¬å¾€å¾€æ˜¯å…ˆæ£€æµ‹å‡ºäººè„¸ï¼Œå†ç»†å…¥åœ°æ£€æµ‹çœ¼ç›ã€‚æ•…detectEyeså¯åœ¨detectFacesåŸºç¡€ä¸Šæ¥è¿›è¡Œï¼Œä»£ç ä¸­éœ€è¦æ³¨æ„â€œç›¸å¯¹åæ ‡â€ã€‚
+# å½“ç„¶ä¹Ÿå¯ä»¥åœ¨æ•´å¼ å›¾ç‰‡ä¸Šç›´æ¥ä½¿ç”¨åˆ†ç±»å™¨,è¿™ç§æ–¹æ³•ä»£ç è·ŸdetectFacesä¸€æ ·ï¼Œè¿™é‡Œä¸å¤šè¯´ã€‚
 
-
-#¼ì²âÑÛ¾¦£¬·µ»Ø×ø±ê
-#ÓÉÓÚÑÛ¾¦ÔÚÈËÁ³ÉÏ£¬ÎÒÃÇÍùÍùÊÇÏÈ¼ì²â³öÈËÁ³£¬ÔÙÏ¸ÈëµØ¼ì²âÑÛ¾¦¡£¹ÊdetectEyes¿ÉÔÚdetectFaces»ù´¡ÉÏÀ´½øĞĞ£¬´úÂëÖĞĞèÒª×¢Òâ¡°Ïà¶Ô×ø±ê¡±¡£
-#µ±È»Ò²¿ÉÒÔÔÚÕûÕÅÍ¼Æ¬ÉÏÖ±½ÓÊ¹ÓÃ·ÖÀàÆ÷,ÕâÖÖ·½·¨´úÂë¸údetectFacesÒ»Ñù£¬ÕâÀï²»¶àËµ¡£
 def detectEyes(image_name):
-    eye_cascade = cv2.CascadeClassifier('/usr/local/share/OpenCV/haarcascades/haarcascade_eye.xml')
+    eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
     faces = detectFaces(image_name)
 
     img = cv2.imread(image_name)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     result = []
-    for (x1,y1,x2,y2) in faces:
+    for (x1, y1, x2, y2) in faces:
         roi_gray = gray[y1:y2, x1:x2]
-        eyes = eye_cascade.detectMultiScale(roi_gray,1.3,2)
-        for (ex,ey,ew,eh) in eyes:
-            result.append((x1+ex,y1+ey,x1+ex+ew,y1+ey+eh))
+        eyes = eye_cascade.detectMultiScale(roi_gray, 1.3, 2)
+        for (ex, ey, ew, eh) in eyes:
+            result.append((x1 + ex, y1 + ey, x1 + ex + ew, y1 + ey + eh))
     return result
 
 
-#ÔÚÔ­Í¼ÏñÉÏ¿ò³öÑÛ¾¦.
+# åœ¨åŸå›¾åƒä¸Šæ¡†å‡ºçœ¼ç›.
 def drawEyes(image_name):
     eyes = detectEyes(image_name)
     if eyes:
         img = Image.open(image_name)
         draw_instance = ImageDraw.Draw(img)
-        for (x1,y1,x2,y2) in eyes:
-            draw_instance.rectangle((x1,y1,x2,y2), outline=(0, 0,255))
-        img.save('draweyes_'+image_name)
+        for (x1, y1, x2, y2) in eyes:
+            draw_instance.rectangle((x1, y1, x2, y2), outline=(0, 0, 255))
+        img.save('draweyes_' + image_name)
 
 
-#¼ì²âĞ¦Á³
+# æ£€æµ‹ç¬‘è„¸
 def detectSmiles(image_name):
     img = cv2.imread(image_name)
-    smiles_cascade = cv2.CascadeClassifier("/usr/share/opencv/haarcascades/haarcascade_smile.xml")
+    smiles_cascade = cv2.CascadeClassifier("haarcascade_smile.xml")
     if img.ndim == 3:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
-        gray = img #ifÓï¾ä£ºÈç¹ûimgÎ¬¶ÈÎª3£¬ËµÃ÷²»ÊÇ»Ò¶ÈÍ¼£¬ÏÈ×ª»¯Îª»Ò¶ÈÍ¼gray£¬Èç¹û²»Îª3£¬Ò²¾ÍÊÇ2£¬Ô­Í¼¾ÍÊÇ»Ò¶ÈÍ¼
+        gray = img  # ifè¯­å¥ï¼šå¦‚æœimgç»´åº¦ä¸º3ï¼Œè¯´æ˜ä¸æ˜¯ç°åº¦å›¾ï¼Œå…ˆè½¬åŒ–ä¸ºç°åº¦å›¾grayï¼Œå¦‚æœä¸ä¸º3ï¼Œä¹Ÿå°±æ˜¯2ï¼ŒåŸå›¾å°±æ˜¯ç°åº¦å›¾
 
-    smiles = smiles_cascade.detectMultiScale(gray,4,5)
+    smiles = smiles_cascade.detectMultiScale(gray, 4, 5)
     result = []
-    for (x,y,width,height) in smiles:
-        result.append((x,y,x+width,y+height))
+    for (x, y, width, height) in smiles:
+        result.append((x, y, x + width, y + height))
     return result
 
 
-#ÔÚÔ­Í¼ÏñÉÏ¿ò³öĞ¦Á³
+# åœ¨åŸå›¾åƒä¸Šæ¡†å‡ºç¬‘è„¸
 def drawSmiles(image_name):
     smiles = detectSmiles(image_name)
     if smiles:
         img = Image.open(image_name)
         draw_instance = ImageDraw.Draw(img)
-        for (x1,y1,x2,y2) in smiles:
-            draw_instance.rectangle((x1,y1,x2,y2), outline=(100, 100,0))
-        img.save('drawsmiles_'+image_name)
+        for (x1, y1, x2, y2) in smiles:
+            draw_instance.rectangle((x1, y1, x2, y2), outline=(100, 100, 0))
+        img.save('drawsmiles_' + image_name)
 
 
 if __name__ == '__main__':
-	"""
-	ÉÏÃæµÄ´úÂë½«ÑÛ¾¦¡¢ÈËÁ³¡¢Ğ¦Á³ÔÚ²»Í¬µÄÍ¼ÏñÉÏ¿ò³ö£¬Èç¹ûĞèÒªÔÚÍ¬Ò»ÕÅÍ¼ÏñÉÏ¿ò³ö£¬¸ÄÒ»ÏÂ´úÂë¾Í¿ÉÒÔÁË¡£
-	×ÜÖ®£¬ÀûÓÃopencvÀïÑµÁ·ºÃµÄhaarÌØÕ÷µÄxmlÎÄ¼ş£¬ÔÚÍ¼Æ¬ÉÏ¼ì²â³öÈËÁ³µÄ×ø±ê£¬ÀûÓÃÕâ¸ö×ø±ê£¬ÎÒÃÇ¿ÉÒÔ½«ÈËÁ³ÇøÓò¼ôÇĞ±£´æ£¬Ò²¿ÉÒÔÔÚÔ­Í¼ÉÏ½«ÈËÁ³¿ò³ö¡£¼ôÇĞ±£´æÈËÁ³ÒÔ¼°ÓÃ¾ØĞÎ¹¤¾ß¿ò³öÈËÁ³£¬±¾³ÌĞòÊ¹ÓÃµÄÊÇPILÀïµÄImage¡¢ImageDrawÄ£¿é¡£
-	´ËÍâ£¬opencvÀïÃæÒ²ÓĞ»­¾ØĞÎµÄÄ£¿é£¬Í¬Ñù¿ÉÒÔÓÃÀ´¿ò³öÈËÁ³¡£
-	"""
-    drawFaces('obama.jpg')
-    #drawEyes('obama.jpg')
-    #drawSmiles('obama.jpg')
-    saveFaces('obama1.jpg')
-
+    # ä¸Šé¢çš„ä»£ç å°†çœ¼ç›ã€äººè„¸ã€ç¬‘è„¸åœ¨ä¸åŒçš„å›¾åƒä¸Šæ¡†å‡ºï¼Œå¦‚æœéœ€è¦åœ¨åŒä¸€å¼ å›¾åƒä¸Šæ¡†å‡ºï¼Œæ”¹ä¸€ä¸‹ä»£ç å°±å¯ä»¥äº†ã€‚
+    # æ€»ä¹‹ï¼Œåˆ©ç”¨opencvé‡Œè®­ç»ƒå¥½çš„haarç‰¹å¾çš„xmlæ–‡ä»¶ï¼Œåœ¨å›¾ç‰‡ä¸Šæ£€æµ‹å‡ºäººè„¸çš„åæ ‡ï¼Œåˆ©ç”¨è¿™ä¸ªåæ ‡ï¼Œæˆ‘ä»¬å¯ä»¥å°†äººè„¸åŒºåŸŸå‰ªåˆ‡ä¿å­˜ï¼Œä¹Ÿå¯ä»¥åœ¨åŸå›¾ä¸Šå°†äººè„¸æ¡†å‡ºã€‚å‰ªåˆ‡ä¿å­˜äººè„¸ä»¥åŠç”¨çŸ©å½¢å·¥å…·æ¡†å‡ºäººè„¸ï¼Œæœ¬ç¨‹åºä½¿ç”¨çš„æ˜¯PILé‡Œçš„Imageã€ImageDrawæ¨¡å—ã€‚
+    # æ­¤å¤–ï¼Œopencvé‡Œé¢ä¹Ÿæœ‰ç”»çŸ©å½¢çš„æ¨¡å—ï¼ŒåŒæ ·å¯ä»¥ç”¨æ¥æ¡†å‡ºäººè„¸ã€‚
+    drawFaces('2c.jpg')
+    drawEyes('2c.jpg')
+    # drawEyes('obama.jpg')
+    # drawSmiles('obama.jpg')
+    # saveFaces('obama1.jpg')
