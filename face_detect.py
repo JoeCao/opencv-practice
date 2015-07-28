@@ -8,25 +8,24 @@ from PIL import Image, ImageDraw
 # detectFaces()返回图像中所有人脸的矩形坐标（矩形左上、右下顶点）
 # 使用haar特征的级联分类器haarcascade_frontalface_default.xml，在haarcascades目录下还有其他的训练好的xml文件可供选择。
 # 注：haarcascades目录下训练好的分类器必须以灰度图作为输入。
-def detectFaces(image_name):
+def detect_faces(image_name):
     img = cv2.imread(image_name)
     face_cascade = cv2.CascadeClassifier(
         "haarcascade_frontalface_default.xml")
+    # if语句：如果img维度为3，说明不是灰度图，先转化为灰度图gray，如果不为3，也就是2，原图就是灰度图
     if img.ndim == 3:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
-        gray = img  # if语句：如果img维度为3，说明不是灰度图，先转化为灰度图gray，如果不为3，也就是2，原图就是灰度图
-
-    faces = face_cascade.detectMultiScale(gray, 1.2, 5)  # 1.3和5是特征的最小、最大检测窗口，它改变检测结果也会改变
-    result = []
-    for (x, y, width, height) in faces:
-        result.append((x, y, x + width, y + height))
-    return result
+        gray = img
+    # 获取每个脸部的左上角坐标x,y 并计算出脸部的长度和宽度
+    # 1.3和5是特征的最小、最大检测窗口，它改变检测结果也会改变
+    faces = face_cascade.detectMultiScale(gray, 1.2, 5)
+    return [(x, y, x + width, y + height) for x, y, width, height in faces]
 
 
 # 保存人脸图
-def saveFaces(image_name):
-    faces = detectFaces(image_name)
+def save_faces(image_name):
+    faces = detect_faces(image_name)
     if faces:
         # 将人脸保存在save_dir目录下。
         # Image模块：Image.open获取图像句柄，crop剪切图像(剪切的区域就是detectFaces返回的坐标)，save保存。
@@ -41,10 +40,10 @@ def saveFaces(image_name):
 
 # 在原图像上画矩形，框出所有人脸。
 # 调用Image模块的draw方法，Image.open获取图像句柄，ImageDraw.Draw获取该图像的draw实例，然后调用该draw实例的rectangle方法画矩形(矩形的坐标即
-# detectFaces返回的坐标)，outline是矩形线条颜色(B,G,R)。
+# detect_faces返回的坐标)，outline是矩形线条颜色(B,G,R)。
 # 注：原始图像如果是灰度图，则去掉outline，因为灰度图没有RGB可言。drawEyes、detectSmiles也一样。
-def drawFaces(image_name):
-    faces = detectFaces(image_name)
+def draw_faces(image_name):
+    faces = detect_faces(image_name)
     if faces:
         img = Image.open(image_name)
         draw_instance = ImageDraw.Draw(img)
@@ -59,7 +58,7 @@ def drawFaces(image_name):
 
 def detectEyes(image_name):
     eye_cascade = cv2.CascadeClassifier('haarcascade_eye.xml')
-    faces = detectFaces(image_name)
+    faces = detect_faces(image_name)
 
     img = cv2.imread(image_name)
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -114,8 +113,8 @@ if __name__ == '__main__':
     # 上面的代码将眼睛、人脸、笑脸在不同的图像上框出，如果需要在同一张图像上框出，改一下代码就可以了。
     # 总之，利用opencv里训练好的haar特征的xml文件，在图片上检测出人脸的坐标，利用这个坐标，我们可以将人脸区域剪切保存，也可以在原图上将人脸框出。剪切保存人脸以及用矩形工具框出人脸，本程序使用的是PIL里的Image、ImageDraw模块。
     # 此外，opencv里面也有画矩形的模块，同样可以用来框出人脸。
-    drawFaces('2c.jpg')
-    drawEyes('2c.jpg')
+    draw_faces('3c.jpg')
+    # drawEyes('3c.jpg')
     # drawEyes('obama.jpg')
     # drawSmiles('obama.jpg')
     # saveFaces('obama1.jpg')
